@@ -1,3 +1,4 @@
+import io
 import logging
 import re
 
@@ -15,7 +16,16 @@ class RegexExtractor(Extractor):
         self.skip_block_regex = skip_block_regex
         self.filename_block_regex = filename_block_regex
 
-    def extract_blocks(self, file):
+    def extract_blocks(self, data):
+        if type(data) is list:
+            lines = data.strip()
+        elif type(data) is str:
+            lines = data.strip().split('\n')
+        elif type(data) is io.TextIOWrapper:
+            lines = data.read().strip().split('\n')
+        else:
+            raise Exception("Unknows type of data: {}".format(type(data)))
+
         extracted_blocks = []
         total_code_blocks = 0
         total_skipped_blocks = 0
@@ -26,8 +36,10 @@ class RegexExtractor(Extractor):
         block_id = -1
         skip = False
         begin_line = 0
+        first_line = True
+        newline_added = False
 
-        for line_number, line in enumerate(file):
+        for line_number, line in enumerate(lines):
 
             if re.match(self.begin_block_regex, line):
                 block_started = True
@@ -54,9 +66,17 @@ class RegexExtractor(Extractor):
                 current_filename = self.default_output
                 block_data = []
                 skip = False
+                newline_added = False
+                first_line = True
 
             if block_started:
+                if not first_line:
+                    block_data.append('\n')
+                elif not newline_added and len(extracted_blocks) > 0:
+                    block_data.append('\n')
+                    newline_added = True
                 block_data.append(line)
+                first_line = False
                 continue
 
         return ExtractionResult(extracted_blocks, total_code_blocks, total_skipped_blocks)

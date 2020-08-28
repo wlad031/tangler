@@ -29,9 +29,10 @@ def run_extraction():
 
         grouped_blocks = {}
         for block in result.blocks:
-            if grouped_blocks.get(block.file) is None:
-                grouped_blocks[block.file] = []
-            grouped_blocks[block.file].append(block)
+            if not block.skip:
+                if grouped_blocks.get(block.file) is None:
+                    grouped_blocks[block.file] = []
+                grouped_blocks[block.file].append(block)
 
         for output_file in grouped_blocks.keys():
             blocks = grouped_blocks[output_file]
@@ -48,4 +49,3 @@ def run_extraction():
             info += "- {} code blocks wrote to {}\n".format(len(blocks), output_file)
         info += "- {} code blocks skipped".format(result.total_skipped_blocks)
         logger.info(info)
-
