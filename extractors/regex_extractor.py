@@ -23,7 +23,7 @@ class RegexExtractor(Extractor):
         block_data = []
         block_started = False
         current_filename = self.default_output
-        block_id = 0
+        block_id = -1
         skip = False
         begin_line = 0
 
