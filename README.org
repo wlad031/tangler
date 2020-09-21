@@ -1,0 +1,64 @@
+#+TITLE: Tangler
+#+AUTHOR: Vladislav Gerasimov
+#+EMAIL: gerasimovvs@yahoo.com
+
+:PROPERTIES:
+:CUSTOM_ID: project-tangler
+:END:
+
+* What is this?
+Tangler is a simple tool which allows to extract code blocks from the documentation files, such as Markdown or Org. It aims to help people who are excited about [[https://en.wikipedia.org/wiki/Literate_programming][literate programming]].
+
+* TODO Usage
+
+* TODO Installation
+
+* Milestones
+
+** 1.0.0 - First release [2/7]
+- [X] - Org files support [1/1]
+  - [X] - :tangle no/filename support
+- [X] - runnable via lein
+- [ ] - README presented
+- [ ] - Changelog presented
+- [ ] - LICENSE presented
+- [ ] - unit tests are in the place
+- [ ] - logging is in the place
+
+** 1.1.0 - First improvements [0/2]
+- [ ] - standalone executable
+- [ ] - Org files support [0/4]
+  - [ ] - :tangle no/yes/filename support
+  - [ ] - extra indentation removed
+  - [ ] - comments support
+  - [ ] - mkdirp support
+
+** 1.1.1 - Markdown support [0/1]
+- [ ] - Markdown support
+
+** 1.2.0 - Watcher [0/1]
+- [ ] - Watch changes in the file and tangle if it has been changed
+
+** 1.3.0 - Deamon [0/3]
+- [ ] - Configurable database of tangle files
+- [ ] - Ability to run tangling for multiple files
+- [ ] - Ability to run tangler as a deamon
+
+* TODO License
+   :PROPERTIES:
+   :CUSTOM_ID: project-tangler-license
+   :END:
+
+Copyright © 2020 FIXME
+
+This program and the accompanying materials are made available under the
+terms of the Eclipse Public License 2.0 which is available at
+http://www.eclipse.org/legal/epl-2.0.
+
+This Source Code may also be made available under the following
+Secondary Licenses when the conditions for such availability set forth
+in the Eclipse Public License, v. 2.0 are satisfied: GNU General Public
+License as published by the Free Software Foundation, either version 2
+of the License, or (at your option) any later version, with the GNU
+Classpath Exception which is available at
+https://www.gnu.org/software/classpath/license.html.

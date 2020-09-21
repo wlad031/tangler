@@ -1,22 +1,31 @@
 (ns code-extractor.core
   (:require [clojure.string :as str]
             [clojure.tools.cli :refer [parse-opts]]
-            [clojure.java.io :refer [file]])
+            [clojure.java.io :as io]
+            [taoensso.timbre :as log])
   (:gen-class))
 
 (def cli-options
   [["-f" "--file FILE" "File to tangle"
     :id :file
-    :validate [#(.exists (file %)) "File doesn't exist"]]
+    :validate [#(.exists (io/file %)) "File doesn't exist"]]
    ["-h" "--help"]])
 
-(defrecord block [id begin-line end-line skip filename data])
+(defrecord Block [id begin-line end-line skip filename data])
+(defrecord ExtractionResult [not-skipped-blocks skipped-blocks])
+
+(defn make-extraction-result [all-blocks-list]
+  (let
+   [grouped-blocks (group-by :skip all-blocks-list)]
+    (->ExtractionResult
+     (group-by :filename (get grouped-blocks false))
+     (group-by :filename (get grouped-blocks true)))))
 
 (defn matches? [regex string]
   (let [[_ fn _] (re-matches regex string)] (not (nil? fn))))
 
 (defn match-first-group-or-default [regex string default]
-  (let [[_ fn _] (re-matches regex string)] fn))
+  (let [[_ fn _] (re-matches regex string)] (if (nil? fn) default fn)))
 
 (defn extract-regex [default-output b-regexes data]
 
@@ -28,16 +37,17 @@
       (letfn
        [(extract-regex-iter-c
           [block-id block-data is-block-started block-filename
-           block-skip block-begin-line is-block-first-line is-newline-added result]
+           block-skip block-begin-line is-block-first-line
+           is-newline-added result]
           (extract-regex-iter (rest lines) (inc line-number) block-id block-data
                               is-block-started block-filename block-skip
-                              block-begin-line is-block-first-line is-newline-added
-                              result))
+                              block-begin-line is-block-first-line
+                              is-newline-added result))
 
         (extract-regex-iter-skip []
-          (extract-regex-iter-c block-id block-data is-block-started block-filename
-                                block-skip block-begin-line is-block-first-line
-                                is-newline-added result))
+          (extract-regex-iter-c block-id block-data is-block-started
+                                block-filename block-skip block-begin-line
+                                is-block-first-line is-newline-added result))
 
         (extract-regex-iter-begin []
           (let [skip     (matches? (:b-skip b-regexes) (first lines))
@@ -48,14 +58,15 @@
                                   (inc line-number) true false result)))
 
         (extract-regex-iter-end []
-          (extract-regex-iter-c block-id "" false default-output false 0 true false
-                                (conj result (->block block-id block-begin-line
-                                                      (dec line-number) block-skip
-                                                      block-filename block-data))))
+          (extract-regex-iter-c
+           block-id "" false default-output false 0 true false
+           (conj result (->Block block-id block-begin-line (dec line-number)
+                                 block-skip block-filename block-data))))
 
         (extract-regex-iter-new-code-line [block-data is-newline-added]
-          (extract-regex-iter-c block-id block-data true block-filename block-skip
-                                block-begin-line false is-newline-added result))]
+          (extract-regex-iter-c block-id block-data true block-filename
+                                block-skip block-begin-line false
+                                is-newline-added result))]
 
         (if (empty? lines) result
             (cond
@@ -79,8 +90,10 @@
                 (seq result)))
 
               :else (extract-regex-iter-skip)))))]
-    (extract-regex-iter (str/split data #"\n") 0 -1 "" false default-output
-                        false 0 true false '())))
+    (make-extraction-result
+     (reverse (extract-regex-iter
+               (str/split data #"\n") 0 -1 "" false default-output
+               false 0 true false '())))))
 
 (def org-regexes
   {:b-begin       #"^\s*#\+BEGIN_SRC.*$"
@@ -92,13 +105,15 @@
   (extract-regex default-output org-regexes data))
 
 (defn -main [& args]
-  (let [x                  (parse-opts args cli-options)
-        options            (:options x)
-        file               (:file options)
-        default-output     (str file ".output")
-        file-content       (slurp file)
-        extracted-blocks   (reverse (extract-regex-org default-output file-content))
-        not-skipped-blocks (remove #(:skip %) extracted-blocks)
-        to-output-blocks   (map :data not-skipped-blocks)
-        to-output          (reduce #(str %1 "\n" %2) to-output-blocks)]
-    (spit default-output to-output)))
+  (let [x                 (parse-opts args cli-options)
+        options           (:options x)
+        file-path         (:file options)
+        default-output    (str file-path ".tangled")
+        file-content      (slurp file-path)
+        extraction-result (extract-regex-org default-output file-content)]
+    (doseq [[file-path blocks] (:not-skipped-blocks extraction-result)]
+      (log/infof "File %s: tangled %d blocks" file-path (count blocks))
+      (println blocks)
+      (spit file-path (->> blocks
+                           (map :data)
+                           (reduce #(str %1 "\n" %2)))))))
