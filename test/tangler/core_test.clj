@@ -1,6 +1,6 @@
-(ns code-extractor.core-test
+(ns tangler.core-test
   (:require [clojure.test :refer :all]
-            [code-extractor.core :refer :all]))
+            [tangler.core :refer :all]))
 
 (deftest org-regexes-matching-test
   (testing "Test org block begin matches"

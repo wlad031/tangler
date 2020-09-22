@@ -1,4 +1,4 @@
-(ns code-extractor.core
+(ns tangler.core
   (:require [clojure.string :as str]
             [clojure.tools.cli :refer [parse-opts]]
             [clojure.java.io :as io]
@@ -113,7 +113,6 @@
         extraction-result (extract-regex-org default-output file-content)]
     (doseq [[file-path blocks] (:not-skipped-blocks extraction-result)]
       (log/infof "File %s: tangled %d blocks" file-path (count blocks))
-      (println blocks)
       (spit file-path (->> blocks
                            (map :data)
                            (reduce #(str %1 "\n" %2)))))))

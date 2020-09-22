@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/tools.cli "1.0.194"]
                  [com.taoensso/timbre "4.10.0"]]
-  :repl-options {:init-ns code-extractor.core}
+  :repl-options {:init-ns tangler.core}
   :plugins [[lein-cljfmt "0.7.0"]
             [lein-kibit "0.1.8"]]
-  :main code-extractor.core)
+  :main tangler.core)
