@@ -96,10 +96,10 @@
                false 0 true false '())))))
 
 (def org-regexes
-  {:b-begin       #"^\s*#\+BEGIN_SRC.*$"
-   :b-end         #"^\s*#\+END_SRC.*$"
-   :b-skip        #"^\s*#\+BEGIN_SRC.*\s:tangle\ no.*$"
-   :b-file        #"^\s*#\+BEGIN_SRC.*\s:tangle\s?(\S*)\s?.*$"})
+  {:b-begin       #"^\s*#\+(?i)(BEGIN_SRC).*$"
+   :b-end         #"^\s*#\+(?i)(END_SRC).*$"
+   :b-skip        #"^\s*#\+(?i)(BEGIN_SRC).*\s:tangle\ no.*$"
+   :b-file        #"^\s*#\+(?i)(BEGIN_SRC).*\s:tangle\s?(\S*)\s?.*$"})
 
 (defn extract-regex-org [default-output data]
   (extract-regex default-output org-regexes data))
