@@ -16,12 +16,12 @@ lein run -f /path/to/file
 #+end_src
 
 * Milestones
-** 1.0.0 - First release [5/6]
+** 1.0.0 - First release [6/6]
 - [X] - Org files support [1/1]
-  - [X] - :tangle no/filename support
+  - [X] - =:tangle no/filename= support
 - [X] - runnable via lein
 - [X] - README presented
-- [ ] - Changelog presented
+- [X] - CHANGELOG presented
 - [X] - LICENSE presented
 - [X] - logging is in the place
 
