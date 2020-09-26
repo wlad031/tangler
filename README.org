@@ -9,21 +9,21 @@
 * What is this?
 Tangler is a simple tool which allows to extract code blocks from the documentation files, such as Markdown or Org. It aims to help people who are excited about [[https://en.wikipedia.org/wiki/Literate_programming][literate programming]].
 
-* TODO Usage
+* Usage
 
-* TODO Installation
+#+begin_src bash
+lein run -f /path/to/file
+#+end_src
 
 * Milestones
-
-** 1.0.0 - First release [2/7]
+** 1.0.0 - First release [5/6]
 - [X] - Org files support [1/1]
   - [X] - :tangle no/filename support
 - [X] - runnable via lein
-- [ ] - README presented
+- [X] - README presented
 - [ ] - Changelog presented
-- [ ] - LICENSE presented
-- [ ] - unit tests are in the place
-- [ ] - logging is in the place
+- [X] - LICENSE presented
+- [X] - logging is in the place
 
 ** 1.1.0 - First improvements [0/2]
 - [ ] - standalone executable
@@ -43,22 +43,3 @@ Tangler is a simple tool which allows to extract code blocks from the documentat
 - [ ] - Configurable database of tangle files
 - [ ] - Ability to run tangling for multiple files
 - [ ] - Ability to run tangler as a deamon
-
-* TODO License
-   :PROPERTIES:
-   :CUSTOM_ID: project-tangler-license
-   :END:
-
-Copyright © 2020 FIXME
-
-This program and the accompanying materials are made available under the
-terms of the Eclipse Public License 2.0 which is available at
-http://www.eclipse.org/legal/epl-2.0.
-
-This Source Code may also be made available under the following
-Secondary Licenses when the conditions for such availability set forth
-in the Eclipse Public License, v. 2.0 are satisfied: GNU General Public
-License as published by the Free Software Foundation, either version 2
-of the License, or (at your option) any later version, with the GNU
-Classpath Exception which is available at
-https://www.gnu.org/software/classpath/license.html.

@@ -14,6 +14,9 @@
 (defrecord Block [id begin-line end-line skip filename data])
 (defrecord ExtractionResult [not-skipped-blocks skipped-blocks])
 
+(defn total-skipped-blocks [extraction-result]
+  (reduce + (map count (vals (:skipped-blocks extraction-result)))))
+
 (defn make-extraction-result [all-blocks-list]
   (let
    [grouped-blocks (group-by :skip all-blocks-list)]
@@ -35,38 +38,34 @@
        block-skip block-begin-line is-block-first-line is-newline-added result]
 
       (letfn
-       [(extract-regex-iter-c
-          [block-id block-data is-block-started block-filename
-           block-skip block-begin-line is-block-first-line
-           is-newline-added result]
-          (extract-regex-iter (rest lines) (inc line-number) block-id block-data
-                              is-block-started block-filename block-skip
-                              block-begin-line is-block-first-line
-                              is-newline-added result))
-
-        (extract-regex-iter-skip []
-          (extract-regex-iter-c block-id block-data is-block-started
-                                block-filename block-skip block-begin-line
-                                is-block-first-line is-newline-added result))
+       [(extract-regex-iter-skip []
+          (extract-regex-iter
+           (rest lines) (inc line-number) block-id block-data is-block-started
+           block-filename block-skip block-begin-line is-block-first-line
+           is-newline-added result))
 
         (extract-regex-iter-begin []
           (let [skip     (matches? (:b-skip b-regexes) (first lines))
                 filename (when-not skip
                            (match-first-group-or-default
                             (:b-file b-regexes) (first lines) default-output))]
-            (extract-regex-iter-c (inc block-id) "" true filename skip
-                                  (inc line-number) true false result)))
+            (extract-regex-iter
+             (rest lines) (inc line-number) (inc block-id) "" true filename skip
+             (inc line-number) true false result)))
 
         (extract-regex-iter-end []
-          (extract-regex-iter-c
-           block-id "" false default-output false 0 true false
-           (conj result (->Block block-id block-begin-line (dec line-number)
-                                 block-skip block-filename block-data))))
+          (extract-regex-iter
+           (rest lines) (inc line-number) block-id "" false default-output false
+           0 true false
+           (conj result
+                 (->Block block-id block-begin-line (dec line-number) block-skip
+                          block-filename block-data))))
 
         (extract-regex-iter-new-code-line [block-data is-newline-added]
-          (extract-regex-iter-c block-id block-data true block-filename
-                                block-skip block-begin-line false
-                                is-newline-added result))]
+          (extract-regex-iter
+           (rest lines) (inc line-number) block-id block-data true
+           block-filename block-skip block-begin-line false is-newline-added
+           result))]
 
         (if (empty? lines) result
             (cond
@@ -90,6 +89,7 @@
                 (seq result)))
 
               :else (extract-regex-iter-skip)))))]
+
     (make-extraction-result
      (reverse (extract-regex-iter
                (str/split data #"\n") 0 -1 "" false default-output
@@ -105,14 +105,13 @@
   (extract-regex default-output org-regexes data))
 
 (defn -main [& args]
-  (let [x                 (parse-opts args cli-options)
-        options           (:options x)
+  (log/merge-config! {:output-fn (fn [{:keys [msg_]}] (print (force msg_)))})
+  (let [options           (:options (parse-opts args cli-options))
         file-path         (:file options)
         default-output    (str file-path ".tangled")
         file-content      (slurp file-path)
         extraction-result (extract-regex-org default-output file-content)]
+    (log/infof "Skipped %d blocks" (total-skipped-blocks extraction-result))
     (doseq [[file-path blocks] (:not-skipped-blocks extraction-result)]
       (log/infof "File %s: tangled %d blocks" file-path (count blocks))
-      (spit file-path (->> blocks
-                           (map :data)
-                           (reduce #(str %1 "\n" %2)))))))
+      (spit file-path (reduce #(str %1 "\n" %2) (map :data blocks))))))
