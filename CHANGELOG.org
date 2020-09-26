@@ -8,43 +8,8 @@
 
 All notable changes to this project will be documented in this file. This change log follows the conventions of [[http://keepachangelog.com/][keepachangelog.com]].
 
-* TODO [[https://github.com/your-name/code-extractor/compare/0.1.1...HEAD][Unreleased]]
-* TODO [[https://github.com/your-name/code-extractor/compare/0.1.0...0.1.1][0.1.1]] - 2020-08-28
-   :PROPERTIES:
-   :CUSTOM_ID: section
-   :END:
+* [[https://github.com/wlad031/tangler/releases/tag/v1.0.0][v1.0.0]] - 2020-09-26
+The first version of Tangler is implemented!
 
-*** Changed
-    :PROPERTIES:
-    :CUSTOM_ID: changed-1
-    :END:
-
-- Documentation on how to make the widgets.
-
-*** Removed
-    :PROPERTIES:
-    :CUSTOM_ID: removed
-    :END:
-
-- =make-widget-sync= - we're all async, all the time.
-
-*** Fixed
-    :PROPERTIES:
-    :CUSTOM_ID: fixed
-    :END:
-
-- Fixed widget maker to keep working when daylight savings switches
-  over.
-
-* TODO 0.1.0 - 2020-08-28
-   :PROPERTIES:
-   :CUSTOM_ID: section-1
-   :END:
-
-*** Added
-    :PROPERTIES:
-    :CUSTOM_ID: added
-    :END:
-
-- Files from the new template.
-- Widget maker public API - =make-widget-sync=.
+** Added:
+- tangle Org files using =lein run -f /path/to/file= command
