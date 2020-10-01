@@ -1,0 +1,24 @@
+Native Image
+------------
+
+https://www.graalvm.org/reference-manual/native-image/[Native image] allows to run tangler without Clojure or JVM installation. The product of the native image is AOT-compiled binary.
+
+Build Requirements
+^^^^^^^^^^^^^^^^^^
+* GraalVM 20.2.0
+* Clojure at least 1.10.2-alpha1
+
+Build
+^^^^^
+To build the native image:
+
+* Make sure Build Requirements are satisfied
+* Install native-image
+```
+gu install native-image
+```
+* Run lein
+```
+lein native-image
+```
+
