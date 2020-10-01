@@ -1,0 +1,67 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+jobs:
+  release-jar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set env
+        run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:11})
+      - name: Install dependencies
+        run: lein deps
+      - name: Build JAR
+        run: lein uberjar
+      - name: Publish release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: target/tangler-${{ env.RELEASE_VERSION }}-standalone.jar
+          draft: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  release-native:
+    strategy:
+      matrix:
+        os:
+          - name: linux
+            image: ubuntu-latest
+          - name: macos
+            image: macOS-latest
+#          - name: windows
+#            image: windows-latest
+    runs-on: ${{ matrix.os.image }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set env
+        run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:11})
+      - name: Install Clojure toolchain
+        uses: DeLaGuardo/setup-clojure@master
+        with:
+          lein: 2.9.4
+      - name: Install dependencies
+        run: lein deps
+      - name: Install Graal
+        uses: DeLaGuardo/setup-graalvm@3
+        with:
+          graalvm-version: '20.2.0.java11'
+      - name: Install Native Image
+        run: gu install native-image
+      - name: Build Native Image
+        run: lein native-image
+      - name: Package
+        run: sudo tar -czf tangler-x86_64-${{ matrix.os.name }}.tar.gz target/tangler
+      - name: Publish release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: tangler-x86_64-${{ matrix.os.name }}.tar.gz
+          draft: true
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
