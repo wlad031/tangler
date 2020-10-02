@@ -4,7 +4,7 @@
 
 (deftest org-regexes-matching-test
   (testing "Test org block begin matches"
-    (is (true? (matches? (:b-begin org-regexes) "#+BEGIN_SRC")))
+    (is (false? (matches? (:b-begin org-regexes) "#+BEGIN_SRC")))
     (is (true? (matches? (:b-begin org-regexes) "#+begin_src")))
     (is (true? (matches? (:b-begin org-regexes) "#+BEGIN_SRC :tangle no")))
     (is (true? (matches? (:b-begin org-regexes) "#+BEGIN_SRC :tangle filename")))
