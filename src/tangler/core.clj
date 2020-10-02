@@ -33,12 +33,10 @@
 (defn extract-regex [default-output b-regexes data]
 
   (letfn
-   [(extract-regex-iter
-      [lines line-number block-id block-data is-block-started block-filename
-       block-skip block-begin-line is-block-first-line is-newline-added result]
-
-      (letfn
-       [(extract-regex-iter-skip []
+   [                                        (extract-regex-iter
+      [lines line-number block-id block-data is-block-started block-filename block-skip block-begin-line is-block-first-line is-newline-added result] (letfn
+       [(extract-regex-iter-skip [
+       ]
           (extract-regex-iter
            (rest lines) (inc line-number) block-id block-data is-block-started
            block-filename block-skip block-begin-line is-block-first-line
