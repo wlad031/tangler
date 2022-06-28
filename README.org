@@ -27,6 +27,8 @@ lein run -f /path/to/file
 
 ** 1.1.0 - First improvements [0/2]
 - [ ] - standalone executable
+- [ ] - option to ignore some of skip/filename/etc.
+- [ ] - option for default output
 - [ ] - Org files support [0/4]
   - [ ] - :tangle no/yes/filename support
   - [ ] - extra indentation removed
